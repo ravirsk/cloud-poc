@@ -2,10 +2,10 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_instance" "example" {
+resource "aws_instance" "TerraExample" {
   ami           = "ami-022e1a32d3f742bd8"
   instance_type = "t2.micro"
-  subnet_id 	= "subnet-089fdd231c885854"
+  subnet_id 	  = "subnet-089fdd231c885854"
   vpc_security_group_ids = [aws_security_group.instance.id]
   
   
