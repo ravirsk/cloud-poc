@@ -21,10 +21,11 @@ resource "aws_instance" "TerraExample" {
     Name = "terraform-example-instance"
   }
 }
+
 resource "aws_security_group" "instance" {
-  name = "terraform-example-instance"
+  name = "terraform-example-instance-SG"
   description = "Allow http inbound traffic"
-  vpc_id		= "vpc-00b19f71bbeada9d"
+  vpc_id		= "vpc-00b194f71bbeada9d"
   
   ingress {
     from_port   = var.server_port
