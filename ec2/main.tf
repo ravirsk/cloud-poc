@@ -21,7 +21,6 @@ resource "aws_instance" "TerraExample" {
     Name = "terraform-example-instance"
   }
 }
-
 resource "aws_security_group" "instance" {
   name = "terraform-example-instance"
   description = "Allow http inbound traffic"
