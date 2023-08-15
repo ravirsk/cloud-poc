@@ -15,6 +15,9 @@ terraform {
 
 provider "azurerm" {
   features {}
+  
+  #use_msi = true
   subscription_id = "0d96d832-09fl-4095-ba73-c796453c9a39"
-  # tennant_id = "" # to configure terraform across tennant
+  tennant_id = "3f0bdd77-1711-49bc-9b8c-6f2ba3e1c085" # to configure terraform across tennant
+  #client_id = 
 }
