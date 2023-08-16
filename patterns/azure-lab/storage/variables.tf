@@ -9,16 +9,16 @@ variable "resource_group_name" {
 }
 
 variable "storage_account_name" {
-  default     = "rg-14-tf-storageaccount"
+  default     = "rg14tf-storageaccount"
   description = "rg-14-tf-storageaccount"
 }
 
 variable "storage_container_name" {
-  default     = "rg-14-tfstate-container"
+  default     = "rg14tfstatecontainer"
   description = "rg-14-tfstate-container"
 }
 
 variable "blob_name" {
-  default     = "rg-14-tfstate"
+  default     = "rg14tfstate"
   description = "rg-14-tfstate"
 }
