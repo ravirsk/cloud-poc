@@ -1,3 +1,5 @@
 data "azurerm_resource_group"  "rg14" {
-	name = "ssc-core-ea-innolab-rg-14"
+	name = var.resource_group_name.name
 } 
+
+
