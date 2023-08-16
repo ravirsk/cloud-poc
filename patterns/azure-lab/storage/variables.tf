@@ -9,7 +9,7 @@ variable "resource_group_name" {
 }
 
 variable "storage_account_name" {
-  default     = "rg14tf-storageaccount"
+  default     = "rg14tfstorageaccount"
   description = "rg-14-tf-storageaccount"
 }
 
