@@ -1,6 +1,7 @@
 terraform {
 
 	backend "azurerm" {
+		resource_group_name	= data.azurerm_resource_group.rg14.name
 		storage_account_name = "tfblobstateacct"
 		container_name 		= "blobstatecontainer"
 		key					= "terraform-state-storeage-blob.tfstate"
