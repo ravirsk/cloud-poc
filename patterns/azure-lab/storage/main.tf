@@ -1,14 +1,3 @@
-terraform {
-
-	backend "azurerm" {
-		resource_group_name	= "ssc-core-ea-innolab-rg-14"
-		storage_account_name = "tfblobstateacct"
-		container_name 		= "blobstatecontainer"
-		key					= "terraform-state-storeage-blob.tfstate"
-	}
-
-}
-
 # Create storage account
 resource "azurerm_storage_account" "astga" {
   name                     = var.storage_account_name
