@@ -16,8 +16,6 @@ resource "azurerm_storage_container" "astc" {
   storage_account_name  = azurerm_storage_account.astga.name
   container_access_type = "private"
     
-  tags = {
-    environment = "innolab-rg-14"
-  }
+
 }
 
