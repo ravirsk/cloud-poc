@@ -1,37 +1,51 @@
-resource "azurerm_resource_group" "rg" {
-  location = var.resource_group_location
-  name     = "ssc-core-ea-innolab-rg-14"
+terraform {
+	backend "azurerm" {
+		resource_group_name	= "ssc-ccoe-ea-innolab-rg-14"
+		storage_account_name = var.storage_account_name
+		container_name 		= var.storage_container_name
+		key					= "lab.win-vm-iis.tfstate"
+
+		use_msi = true
+ 		subscription_id = "0d96d832-09f1-4095-ba73-c796453c9a39"
+		tenant_id = "3f0bdd77-1711-49bc-9b8c-6f2ba3e1c085"
+	}
 }
 
-# Create virtual network
-resource "azurerm_virtual_network" "my_terraform_network" {
-  name                = "ssc-core-ea-innolab-rg-14-vnet"
-  address_space       = ["172.20.0.0/23"]
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-}
+# Use existing subnet through data
+#resource "azurerm_resource_group" "rg14" {
+#  location = var.resource_group_location
+#  name     = "ssc-ccoe-ea-innolab-rg-14"
+#}
+
+# Create virtual network / or use existing through data
+#resource "azurerm_virtual_network" "my_terraform_network" {
+#  name                = "ssc-core-ea-innolab-rg-14-vnet"
+#  address_space       = ["172.20.0.0/23"]
+#  location            = azurerm_resource_group.rg14.location
+#  resource_group_name = azurerm_resource_group.rg14.name
+#}
 
 # Create subnet
-resource "azurerm_subnet" "my_terraform_subnet" {
-  name                 = "ssc-core-ea-innolab-14-subnet"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.my_terraform_network.name
-  address_prefixes     = ["172.20.0.0/24"]
-}
+#resource "azurerm_subnet" "reg14DefaultSubnet" {
+#  name                 = "ssc-core-ea-innolab-14-subnet"
+#  resource_group_name  = azurerm_resource_group.rg14.name
+#  virtual_network_name = azurerm_virtual_network.my_terraform_network.name
+#  address_prefixes     = ["172.20.0.0/24"]
+#}
 
 # Create public IPs
 resource "azurerm_public_ip" "my_terraform_public_ip" {
-  name                = "ssc-core-ea-innolab-14-${random_pet.prefix.id}-public-ip"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = "${var.prefix}-public-ip"
+  location            = data.azurerm_resource_group.rg14.location
+  resource_group_name = data.azurerm_resource_group.rg14.name
   allocation_method   = "Dynamic"
 }
 
 # Create Network Security Group and rules
 resource "azurerm_network_security_group" "my_terraform_nsg" {
-  name                = "ssc-core-ea-innolab-14-${random_pet.prefix.id}-nsg"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = "${var.prefix}-nsg"
+  location            = data.azurerm_resource_group.rg14.location
+  resource_group_name = data.azurerm_resource_group.rg14.name
 
   security_rule {
     name                       = "RDP"
@@ -59,13 +73,13 @@ resource "azurerm_network_security_group" "my_terraform_nsg" {
 
 # Create network interface
 resource "azurerm_network_interface" "my_terraform_nic" {
-  name                = "ssc-core-ea-innolab-14-${random_pet.prefix.id}-nic"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = "${var.prefix}-nic"
+  location            = data.azurerm_resource_group.rg14.location
+  resource_group_name = data.azurerm_resource_group.rg14.name
 
   ip_configuration {
     name                          = "my_nic_configuration"
-    subnet_id                     = azurerm_subnet.my_terraform_subnet.id
+    subnet_id                     = data.azurerm_subnet.reg14DefaultSubnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.my_terraform_public_ip.id
   }
@@ -79,9 +93,9 @@ resource "azurerm_network_interface_security_group_association" "example" {
 
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "my_storage_account" {
-  name                     = "diag${random_id.random_id.hex}"
-  location                 = azurerm_resource_group.rg.location
-  resource_group_name      = azurerm_resource_group.rg.name
+  name                     = "${var.prefix}Bootstorageacct"
+  location                 = data.azurerm_resource_group.rg14.location
+  resource_group_name      = data.azurerm_resource_group.rg14.name
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
@@ -92,8 +106,8 @@ resource "azurerm_windows_virtual_machine" "main" {
   name                  = "ssc-core-ea-innolab-14-${var.prefix}-vm"
   admin_username        = "azureuser"
   admin_password        = random_password.password.result
-  location              = azurerm_resource_group.rg.location
-  resource_group_name   = azurerm_resource_group.rg.name
+  location              = data.azurerm_resource_group.rg14.location
+  resource_group_name   = data.azurerm_resource_group.rg14.name
   network_interface_ids = [azurerm_network_interface.my_terraform_nic.id]
   size                  = "Standard_DS1_v2"
 
@@ -118,7 +132,7 @@ resource "azurerm_windows_virtual_machine" "main" {
 
 # Install IIS web server to the virtual machine
 resource "azurerm_virtual_machine_extension" "web_server_install" {
-  name                       = "${random_pet.prefix.id}-wsi"
+  name                       = "${var.prefix}-wsi"
   virtual_machine_id         = azurerm_windows_virtual_machine.main.id
   publisher                  = "Microsoft.Compute"
   type                       = "CustomScriptExtension"
@@ -136,7 +150,7 @@ resource "azurerm_virtual_machine_extension" "web_server_install" {
 resource "random_id" "random_id" {
   keepers = {
     # Generate a new ID only when a new resource group is defined
-    resource_group = azurerm_resource_group.rg.name
+    resource_group = data.azurerm_resource_group.rg14.name
   }
 
   byte_length = 8
