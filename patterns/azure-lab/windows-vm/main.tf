@@ -1,8 +1,8 @@
 terraform {
 	backend "azurerm" {
 		resource_group_name	= "ssc-ccoe-ea-innolab-rg-14"
-		storage_account_name = var.storage_account_name
-		container_name 		= var.storage_container_name
+		storage_account_name = "rg14tfstorageaccount"
+		container_name 		= "rg14tfstatecontainer"
 		key					= "lab.win-vm-iis.tfstate"
 
 		use_msi = true
