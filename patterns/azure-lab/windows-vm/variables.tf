@@ -23,3 +23,9 @@ variable "prefix" {
   default     = "rg14WinVmIIS"
   description = "Prefix of the resource name"
 }
+
+variable "windows_vm_name" {
+  type        = string
+  default     = "rg14WinVmIIS"
+  description = "Vm Name"
+}

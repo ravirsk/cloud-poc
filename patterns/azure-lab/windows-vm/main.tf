@@ -103,7 +103,7 @@ resource "azurerm_storage_account" "my_storage_account" {
 
 # Create virtual machine
 resource "azurerm_windows_virtual_machine" "main" {
-  name                  = "ssc-core-ea-innolab-14-${var.prefix}-vm"
+  name                  = "${var.windows_vm_name}"
   admin_username        = "azureuser"
   admin_password        = random_password.password.result
   location              = data.azurerm_resource_group.rg14.location
