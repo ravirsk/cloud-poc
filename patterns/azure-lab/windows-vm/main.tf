@@ -93,7 +93,7 @@ resource "azurerm_network_interface_security_group_association" "example" {
 
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "my_storage_account" {
-  name                     = "${var.prefix}Bootstorageacct"
+  name                     = "vmbootstorageacct"
   location                 = data.azurerm_resource_group.rg14.location
   resource_group_name      = data.azurerm_resource_group.rg14.name
   account_tier             = "Standard"
