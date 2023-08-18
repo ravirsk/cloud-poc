@@ -4,7 +4,7 @@ output "public_ip_address" {
 
 output "admin_password" {
   sensitive = false
-  value     = module.win-vm..admin_password
+  value     = module.win-vm.admin_password
 }
 
 output "subnet_id" {
