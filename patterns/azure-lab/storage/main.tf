@@ -11,24 +11,11 @@ terraform {
 	}
 }
 
-# Create storage account
-resource "azurerm_storage_account" "astga" {
-  name                     = var.storage_account_name
-  location                 = data.azurerm_resource_group.rg14.location
-  resource_group_name      = data.azurerm_resource_group.rg14.name
-  account_tier             = "Standard"
-  account_replication_type = "GRS"
-
-  tags = {
-    environment = "innolab-rg-14"
-  }
-}
-
-resource "azurerm_storage_container" "astc" {
-  name                  = var.storage_container_name
-  storage_account_name  = azurerm_storage_account.astga.name
-  container_access_type = "private"
-    
+module "storage" {
+  source = "../../azure-modules/storage"
+  
+  az_resource_group 	= "ssc-ccoe-ea-innolab-rg-14"
+  storage_account_name = "rg14tfstorageaccount"
+  storage_container_name = "rg14tfstatecontainer"
 
 }
-
