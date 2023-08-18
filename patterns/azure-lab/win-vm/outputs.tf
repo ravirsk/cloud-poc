@@ -3,7 +3,7 @@ output "public_ip_address" {
 }
 
 output "admin_password" {
-  sensitive = false
+  sensitive = true
   value     = module.win-vm.admin_password
 }
 
