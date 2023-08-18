@@ -58,11 +58,11 @@ pipeline:
                         action:
                           type: MarkAsFailure
         tags: {}
-        delegateSelectors:
-          - eagl-awslab-terraform-delegate
         strategy:
           parallelism: 1
         when:
           pipelineStatus: All
+        delegateSelectors:
+          - azure-innolab14-delegate
   identifier: IACAzureBlob
   name: IAC-Azure-Storage
