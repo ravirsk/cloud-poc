@@ -1,7 +1,7 @@
 variable "resource_group_location" {
   type        = string
   default     = "eastus2"
-  description = "Location of the resource group."
+  description = "Location of the resource group"
 }
 
 variable "az_resource_group" {
@@ -11,7 +11,7 @@ variable "az_resource_group" {
 
 variable "az_subnet" {
   type        = string
-  description = "Subnet Within Vnet
+  description = "Subnet Within Vnet"
 }
 
 variable "az_vnet" {
