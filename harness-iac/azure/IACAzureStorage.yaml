@@ -1,0 +1,68 @@
+pipeline:
+  projectIdentifier: Cloud_Architecture
+  orgIdentifier: EA
+  tags: {}
+  stages:
+    - stage:
+        name: IAC-Azure-Storage
+        identifier: IACec2
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: TerraformPlan
+                  name: IAC-Azure-Storage-Plan
+                  identifier: EC2IACPlan
+                  spec:
+                    provisionerIdentifier: ec2_plan_id
+                    configuration:
+                      command: Apply
+                      configFiles:
+                        store:
+                          spec:
+                            connectorRef: org.RKRepo
+                            gitFetchType: Branch
+                            branch: feature-01
+                            folderPath: patterns/azure-lab/storage
+                          type: Github
+                      secretManagerRef: harnessSecretManager
+                      skipRefreshCommand: false
+                    delegateSelectors:
+                      - azure-innolab14-delegate
+                  timeout: 10m
+                  strategy:
+                    parallelism: 1
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - AllErrors
+                        action:
+                          type: MarkAsFailure
+              - step:
+                  type: TerraformApply
+                  name: WVM-IAC-Apply
+                  identifier: EC2IACApply
+                  spec:
+                    provisionerIdentifier: ec2_plan_id
+                    configuration:
+                      type: InheritFromPlan
+                    delegateSelectors:
+                      - azure-innolab14-delegate
+                  timeout: 10m
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - AllErrors
+                        action:
+                          type: MarkAsFailure
+        tags: {}
+        delegateSelectors:
+          - eagl-awslab-terraform-delegate
+        strategy:
+          parallelism: 1
+        when:
+          pipelineStatus: All
+  identifier: IACAzureBlob
+  name: IAC-Azure-Storage
