@@ -1,0 +1,70 @@
+pipeline:
+  projectIdentifier: Cloud_Architecture
+  orgIdentifier: EA
+  tags: {}
+  stages:
+    - stage:
+        name: IAC-ec2-standalone-Destroy
+        identifier: IACec2
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: TerraformPlan
+                  name: EC2-IAC-Plan
+                  identifier: EC2IACPlan
+                  spec:
+                    provisionerIdentifier: ec2_plan_id
+                    configuration:
+                      command: Destroy
+                      configFiles:
+                        store:
+                          spec:
+                            connectorRef: org.RKRepo
+                            gitFetchType: Branch
+                            branch: feature-01
+                            folderPath: patterns/lab/ec2
+                          type: Github
+                      secretManagerRef: harnessSecretManager
+                      skipRefreshCommand: false
+                    delegateSelectors:
+                      - custom-tf-delegate
+                  timeout: 10m
+                  strategy:
+                    parallelism: 1
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - AllErrors
+                        action:
+                          type: MarkAsFailure
+              - step:
+                  type: TerraformDestroy
+                  name: EC2-IAC-Destroy
+                  identifier: EC2IACDestroy
+                  spec:
+                    provisionerIdentifier: ec2_plan_id
+                    configuration:
+                      type: InheritFromPlan
+                    delegateSelectors:
+                      - custom-tf-delegate
+                  timeout: 10m
+                  when:
+                    stageStatus: Success
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - AllErrors
+                        action:
+                          type: MarkAsFailure
+        tags: {}
+        delegateSelectors:
+          - eagl-awslab-terraform-delegate
+        strategy:
+          parallelism: 1
+        when:
+          pipelineStatus: All
+  identifier: IACec2Destroy
+  name: IAC-ec2-Destroy

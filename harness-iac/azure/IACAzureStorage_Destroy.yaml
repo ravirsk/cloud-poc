@@ -1,0 +1,62 @@
+pipeline:
+  projectIdentifier: Cloud_Architecture
+  orgIdentifier: EA
+  tags: {}
+  stages:
+    - stage:
+        name: IAC-Azure-Storage
+        identifier: IACec2
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: TerraformPlan
+                  name: IAC-Azure-Storage-Plan
+                  identifier: EC2IACPlan
+                  spec:
+                    provisionerIdentifier: ec2_plan_id
+                    configuration:
+                      command: Destroy
+                      configFiles:
+                        store:
+                          spec:
+                            connectorRef: org.RKRepo
+                            gitFetchType: Branch
+                            branch: feature-01
+                            folderPath: patterns/azure-lab/storage
+                          type: Github
+                      secretManagerRef: harnessSecretManager
+                      skipRefreshCommand: false
+                    delegateSelectors:
+                      - azure-innolab14-delegate
+                  timeout: 10m
+                  strategy:
+                    parallelism: 1
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - AllErrors
+                        action:
+                          type: MarkAsFailure
+              - step:
+                  type: TerraformDestroy
+                  name: WVM-IAC-Storage-Destroy
+                  identifier: WVMIACStorageDestroy
+                  spec:
+                    provisionerIdentifier: ec2_plan_id
+                    configuration:
+                      type: InheritFromPlan
+                    delegateSelectors:
+                      - azure-innolab14-delegate
+                  timeout: 10m
+        tags: {}
+        strategy:
+          parallelism: 1
+        when:
+          pipelineStatus: All
+        delegateSelectors:
+          - azure-innolab14-delegate
+  identifier: IACAzureStorage_Destroy
+  name: IAC-Azure-Storage Destroy
