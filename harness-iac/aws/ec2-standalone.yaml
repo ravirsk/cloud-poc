@@ -64,5 +64,16 @@ pipeline:
           parallelism: 1
         when:
           pipelineStatus: All
+        variables:
+          - name: artifactId
+            type: String
+            description: Spring Boot Web App Artifact Id
+            required: true
+            value: ""
+          - name: starterClass
+            type: String
+            description: ""
+            required: true
+            value: ""
   identifier: IACec2
   name: IAC-ec2
