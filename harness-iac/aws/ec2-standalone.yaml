@@ -69,11 +69,11 @@ pipeline:
             type: String
             description: Spring Boot Web App Artifact Id
             required: true
-            value: ""
+            value: <+input>
           - name: starterClass
             type: String
             description: ""
             required: true
-            value: ""
+            value: <+input>
   identifier: IACec2
   name: IAC-ec2
