@@ -1,0 +1,66 @@
+pipeline:
+  projectIdentifier: Cloud_Architecture
+  orgIdentifier: EA
+  tags: {}
+  stages:
+    - stage:
+        name: IAC-RDS
+        identifier: IACec2
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: TerraformPlan
+                  name: RDS-IAC-Plan
+                  identifier: EC2IACPlan
+                  spec:
+                    provisionerIdentifier: ec2_plan_id
+                    configuration:
+                      command: Apply
+                      configFiles:
+                        store:
+                          spec:
+                            connectorRef: org.RKRepo
+                            gitFetchType: Branch
+                            branch: feature-01
+                            folderPath: patterns/lab/my-sql
+                          type: Github
+                      secretManagerRef: harnessSecretManager
+                      skipRefreshCommand: false
+                    delegateSelectors:
+                      - custom-tf-delegate
+                  timeout: 10m
+                  strategy:
+                    parallelism: 1
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - AllErrors
+                        action:
+                          type: MarkAsFailure
+              - step:
+                  type: TerraformApply
+                  name: RDS-IAC-Apply
+                  identifier: EC2IACApply
+                  spec:
+                    provisionerIdentifier: ec2_plan_id
+                    configuration:
+                      type: InheritFromPlan
+                    delegateSelectors:
+                      - custom-tf-delegate
+                  timeout: 10m
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - AllErrors
+                        action:
+                          type: MarkAsFailure
+        tags: {}
+        strategy:
+          parallelism: 1
+        when:
+          pipelineStatus: All
+  identifier: IACRDSMSSQL
+  name: IAC-RDS-MSSQL
