@@ -11,8 +11,8 @@ metadata:
   labels:
     app: studentapp
 spec:
-  #type: LoadBalancer
-  type: ClusterIP
+  type: LoadBalancer
+  #type: ClusterIP
   ports:
   - port: 8080
   selector:
