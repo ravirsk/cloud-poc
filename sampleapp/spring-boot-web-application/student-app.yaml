@@ -39,8 +39,8 @@ spec:
       restartPolicy: Always
       containers:
       - name: studentapp
-        image: ravindrakadam/studentapp:spring-boot-webapp
-        #image: <+artifact.image>
+        #image: ravindrakadam/studentapp:spring-boot-webapp
+        image: <+artifact.image>
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
