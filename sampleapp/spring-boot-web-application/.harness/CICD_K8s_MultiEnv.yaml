@@ -140,13 +140,13 @@ pipeline:
                 - AllErrors
               action:
                 type: MarkAsFailure
-        delegateSelectors:
-          - eagl-awslab-terraform-delegate
         variables:
           - name: imageTag
             type: String
             description: ""
             required: false
             value: <+pipeline.stages.App_Build.variables.imageTag>
+        delegateSelectors:
+          - azure-innolab14-delegate
   identifier: CICDK8sStudentAppMultiEnv
   name: CI-CD-K8s-StudentApp-MultiEnv
