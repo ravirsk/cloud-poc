@@ -1,0 +1,146 @@
+---
+pipeline:
+  projectIdentifier: "Cloud_Architecture"
+  orgIdentifier: "EA"
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: "org.RKRepo"
+        repoName: "cloud-poc"
+        gitFetchType: "Branch"
+        branch: "feature-01"
+        folderPath: "/sampleapp/spring-boot-web-application"
+        build: "<+input>"
+  stages:
+  - stage:
+      name: "Build-StudentApp"
+      identifier: "App_Build"
+      type: "CI"
+      spec:
+        caching:
+          enabled: true
+          paths: []
+        cloneCodebase: true
+        platform:
+          os: "Linux"
+          arch: "Amd64"
+        runtime:
+          type: "Cloud"
+          spec: {}
+        execution:
+          steps:
+          - step:
+              type: "Run"
+              name: "check dependencies"
+              identifier: "check_dependencies"
+              spec:
+                connectorRef: "org.RKRepo"
+                image: "maven:3.8.2-openjdk-17"
+                shell: "Sh"
+                command: "java -version #mvn -f ./sampleapp/spring-boot-web-application/pom.xml\
+                  \  dependency-check:check -U -DskipTests"
+                reports:
+                  type: "JUnit"
+                  spec:
+                    paths:
+                    - "/sampleapp/spring-boot-web-application/target/*.xml"
+          - step:
+              type: "Run"
+              name: "build"
+              identifier: "build"
+              spec:
+                connectorRef: "org.RKRepo"
+                image: "maven:3.8.2-openjdk-17"
+                shell: "Sh"
+                command: "echo \"Ready To Run Build\"\ncd ./sampleapp/spring-boot-web-application\n\
+                  pwd\nls\njava -version\nmvn --version | grep -i java \nmvn clean\
+                  \ install\necho \"Done\""
+          - step:
+              type: "Run"
+              name: "run test"
+              identifier: "run_test"
+              spec:
+                connectorRef: "org.RKRepo"
+                image: "maven:3.8.2-openjdk-17"
+                shell: "Sh"
+                command: "cd ./sampleapp/spring-boot-web-application\nmvn test"
+                reports:
+                  type: "JUnit"
+                  spec:
+                    paths:
+                    - "/harness/sampleapp/spring-boot-web-application/target/surefire-reports/*.xml"
+          - step:
+              type: "BuildAndPushDockerRegistry"
+              name: "BuildAndPushDockerRegistry_1"
+              identifier: "BuildAndPushDockerRegistry_1"
+              spec:
+                connectorRef: "org.RKDockerHub"
+                repo: "ravindrakadam/studentapp"
+                tags:
+                - "<+pipeline.sequenceId>"
+                - "spring-boot-webapp"
+                dockerfile: "./sampleapp/spring-boot-web-application/Dockerfile"
+        sharedPaths:
+        - "/root/.m2"
+      variables:
+      - name: "artifactId"
+        type: "String"
+        description: ""
+        required: true
+        value: "student-services-security-0.0.1-SNAPSHOT.jar"
+      - name: "imageTag"
+        type: "String"
+        description: ""
+        required: false
+        value: "<+pipeline.sequenceId>"
+  - stage:
+      name: "Deploy-StudentApp"
+      identifier: "DeployStudentApp"
+      description: ""
+      type: "Deployment"
+      spec:
+        deploymentType: "Kubernetes"
+        service:
+          serviceRef: "studentapp"
+          serviceInputs:
+            serviceDefinition:
+              type: "Kubernetes"
+              spec:
+                artifacts:
+                  primary:
+                    primaryArtifactRef: "<+input>"
+                    sources: "<+input>"
+        execution:
+          steps:
+          - step:
+              type: "K8sRollingDeploy"
+              name: "K8sRollingDeploy_1"
+              identifier: "K8sRollingDeploy_1"
+              spec:
+                skipDryRun: false
+                pruningEnabled: false
+              timeout: "10m"
+          rollbackSteps: []
+        environment:
+          environmentRef: "AWSGLLab"
+          deployToAll: false
+          infrastructureDefinitions:
+          - identifier: "K8SAWSLab"
+      tags: {}
+      failureStrategies:
+      - onFailure:
+          errors:
+          - "AllErrors"
+          action:
+            type: "MarkAsFailure"
+      delegateSelectors:
+      - "eagl-awslab-terraform-delegate"
+      variables:
+      - name: "imageTag"
+        type: "String"
+        description: ""
+        required: false
+        value: "<+pipeline.stages.App_Build.variables.imageTag>"
+  identifier: "CICDK8sStudentAppMultiEnv"
+  name: "CI-CD-K8s-StudentApp-MultiEnv"
