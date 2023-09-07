@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cicddemoappns
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: student-app-svc
+  labels:
+    app: studentapp
+spec:
+  type: LoadBalancer
+  #type: ClusterIP
+  ports:
+  - port: 8080
+  selector:
+    app: studentapp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-studentapp
+  namespace: cicddemoappns
+  labels:
+    app: studentapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: studentapp
+  template:
+    metadata:
+      labels:
+        app: studentapp
+    spec:
+      terminationGracePeriodSeconds: 600
+      restartPolicy: Always
+      containers:
+      - name: studentapp
+        image: ravindrakadam/studentapp:spring-boot-webapp
+        #image: <+artifact.image>
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
