@@ -40,7 +40,7 @@ spec:
       containers:
       - name: studentapp
         #image: ravindrakadam/studentapp:spring-boot-webapp
-        image: <+artifact.image>
+        image: {{.Values.image}}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
