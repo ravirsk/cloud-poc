@@ -118,6 +118,7 @@ resource "azurerm_windows_virtual_machine" "main" {
   }
 }
 
+#"commandToExecute": "powershell -ExecutionPolicy Unrestricted Install-WindowsFeature -Name Web-Server -IncludeAllSubFeature -IncludeManagementTools"
 # Install IIS web server to the virtual machine
 resource "azurerm_virtual_machine_extension" "web_server_install" {
   name                       = "${var.prefix}-wsi"
@@ -129,9 +130,19 @@ resource "azurerm_virtual_machine_extension" "web_server_install" {
 
   settings = <<SETTINGS
     {
-      "commandToExecute": "powershell -ExecutionPolicy Unrestricted Install-WindowsFeature -Name Web-Server -IncludeAllSubFeature -IncludeManagementTools"
+
+	  "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.USERDATA.rendered)}')) | Out-File -filepath user_data.ps1\" && powershell -ExecutionPolicy Unrestricted -File user_data.ps1 -Domain_DNSName ${data.template_file.ADDS.vars.Domain_DNSName}"
+
     }
   SETTINGS
+}
+
+#Variable input for the user_data.ps1 script
+data "template_file" "USERDATA" {
+    template = "${file("user_data.ps1")}"
+    vars = {
+        Domain_DNSName          = "${var.windows_vm_name}"
+  }
 }
 
 # Generate random text for a unique storage account name
