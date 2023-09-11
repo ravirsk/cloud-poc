@@ -17,14 +17,14 @@
 #)
 
 # Install IIS
-Install-WindowsFeature -Name Web-Server -IncludeAllSubFeature -IncludeManagementTools
+#Install-WindowsFeature -Name Web-Server -IncludeAllSubFeature -IncludeManagementTools
 
 $temp_path = "C:\temp\"
 
 if( ![System.IO.Directory]::Exists( $temp_path ) )
 {
-
-   Write-Output "Path not found ($temp_path), create the directory and try again"
+   New-Item -ItemType Directory -Force -Path $temp_path
+   Write-Output "Path not found ($temp_path), created the directory"
 
    Break
 
@@ -50,10 +50,11 @@ $whb_installer_url = "https://download.visualstudio.microsoft.com/download/pr/d4
 
 
 $whb_installer_file = $temp_path + [System.IO.Path]::GetFileName( $whb_installer_url )
+Write-Output "Path ($whb_installer_file)"
 
 Try
 {
-
+   Write-Output "Invoking Web Request"
    Invoke-WebRequest -Uri $whb_installer_url -OutFile $whb_installer_file
 
    Write-Output ""
