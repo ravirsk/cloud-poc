@@ -131,7 +131,7 @@ resource "azurerm_virtual_machine_extension" "web_server_install" {
   settings = <<SETTINGS
     {
 
-	  "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.USERDATA.rendered)}')) | Out-File -filepath user_data.ps1\" && powershell -ExecutionPolicy Unrestricted -File user_data.ps1 -Domain_DNSName ${data.template_file.ADDS.vars.Domain_DNSName}"
+	  "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.USERDATA.rendered)}')) | Out-File -filepath user_data.ps1\" && powershell -ExecutionPolicy Unrestricted -File user_data.ps1 -Domain_DNSName ${data.template_file.USERDATA.vars.Domain_DNSName}"
 
     }
   SETTINGS
