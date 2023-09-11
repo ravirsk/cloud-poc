@@ -9,12 +9,12 @@
 # Set path where installer files will be downloaded ...
 #
 
-[CmdletBinding()]
+#[CmdletBinding()]
 
-param 
-( 
-    [Parameter(ValuefromPipeline=$true,Mandatory=$true)] [string]$Domain_DNSName,
-)
+#param 
+#( 
+#    [Parameter(ValuefromPipeline=$true,Mandatory=$true)] [string]$Domain_DNSName,
+#)
 
 # Install IIS
 Install-WindowsFeature -Name Web-Server -IncludeAllSubFeature -IncludeManagementTools
