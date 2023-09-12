@@ -90,10 +90,11 @@ resource "azurerm_storage_account" "my_storage_account" {
 
 
 # Create virtual machine
+#random_password.password.result
 resource "azurerm_windows_virtual_machine" "main" {
   name                  = "${var.windows_vm_name}"
   admin_username        = "azureuser"
-  admin_password        = random_password.password.result
+  admin_password        = "Admin@123"
   location              = data.azurerm_resource_group.usecase_rg.location
   resource_group_name   = data.azurerm_resource_group.usecase_rg.name
   network_interface_ids = [azurerm_network_interface.my_terraform_nic.id]
