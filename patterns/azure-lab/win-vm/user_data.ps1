@@ -24,7 +24,7 @@ if (!(Test-Path $defaultDeployDrive)) {
     $defaultDeployDrive=$env:systemdrive
 }
 $binariesDir = "$defaultDeployDrive\$sampleAppSiteName"
-$appPort=8080
+#$appPort=8080
 $fqdn=[System.Net.Dns]::GetHostByName(($env:computerName)).HostName
 
 if( ![System.IO.Directory]::Exists( $temp_path ) )
