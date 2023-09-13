@@ -159,7 +159,7 @@ if ((Get-Website -Name "$sampleAppSiteName").Id -eq $null) {
     Set-ItemProperty "IIS:\AppPools\$sampleAppSiteName" -Name autoStart -Value $false
     New-Item -Path "$binariesDir" -Type Directory | Out-Null
     $sslCertThumbprint=(New-SelfSignedCertificate -Subject "$fqdn" -CertStoreLocation "CERT:LocalMachine\My").Thumbprint
-    New-IISSite -Name "$sampleAppSiteName" -BindingInformation "*:${appPort}:" -PhysicalPath "$binariesDir" -CertificateThumbPrint "$sslCertThumbprint" -CertStoreLocation "Cert:\LocalMachine\My" -Protocol https
+    New-IISSite -Name "$sampleAppSiteName" -BindingInformation "*:8080:" -PhysicalPath "$binariesDir" -CertificateThumbPrint "$sslCertThumbprint" -CertStoreLocation "Cert:\LocalMachine\My" -Protocol https
     Set-ItemProperty "IIS:\Sites\$sampleAppSiteName" -Name applicationpool -Value $sampleAppSiteName
 	Write-Host "Created WebSite..."
 }
