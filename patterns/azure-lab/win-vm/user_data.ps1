@@ -17,6 +17,16 @@
 
 $temp_path = "C:\temp\"
 
+$ErrorActionPreference = "Stop"
+$sampleAppSiteName = "SampleApp"
+$defaultDeployDrive = "E:\"
+if (!(Test-Path $defaultDeployDrive)) {
+    $defaultDeployDrive=$env:systemdrive
+}
+$binariesDir = "$defaultDeployDrive\$sampleAppSiteName"
+$appPort=8080
+$fqdn=[System.Net.Dns]::GetHostByName(($env:computerName)).HostName
+
 if( ![System.IO.Directory]::Exists( $temp_path ) )
 {
    New-Item -ItemType Directory -Force -Path $temp_path
@@ -112,15 +122,7 @@ if( ![System.IO.Directory]::Exists( $temp_path ) )
 #. $scriptPath
 
 
-$ErrorActionPreference = "Stop"
-$sampleAppSiteName = "SampleApp"
-$defaultDeployDrive = "E:\"
-if (!(Test-Path $defaultDeployDrive)) {
-    $defaultDeployDrive=$env:systemdrive
-}
-$binariesDir = "$defaultDeployDrive\$sampleAppSiteName"
-$appPort=8080
-$fqdn=[System.Net.Dns]::GetHostByName(($env:computerName)).HostName
+
 
 function Install-IIS {
 	Write-Host "Installing IIS..."
