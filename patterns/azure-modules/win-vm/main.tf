@@ -47,13 +47,25 @@ resource "azurerm_network_security_group" "my_terraform_nsg" {
     destination_address_prefix = "*"
   }
   security_rule {
-    name                       = "web"
+    name                       = "web1"
     priority                   = 1001
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "80"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  
+  security_rule {
+    name                       = "web2"
+    priority                   = 1002
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8080"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -90,10 +102,11 @@ resource "azurerm_storage_account" "my_storage_account" {
 
 
 # Create virtual machine
+#random_password.password.result
 resource "azurerm_windows_virtual_machine" "main" {
   name                  = "${var.windows_vm_name}"
   admin_username        = "azureuser"
-  admin_password        = random_password.password.result
+  admin_password        = "Admin@123"
   location              = data.azurerm_resource_group.usecase_rg.location
   resource_group_name   = data.azurerm_resource_group.usecase_rg.name
   network_interface_ids = [azurerm_network_interface.my_terraform_nic.id]
@@ -118,20 +131,37 @@ resource "azurerm_windows_virtual_machine" "main" {
   }
 }
 
+#"commandToExecute": "powershell -ExecutionPolicy Unrestricted Install-WindowsFeature -Name Web-Server -IncludeAllSubFeature -IncludeManagementTools"
+#-Domain_DNSName ${data.template_file.USERDATA.vars.Domain_DNSName}
 # Install IIS web server to the virtual machine
 resource "azurerm_virtual_machine_extension" "web_server_install" {
-  name                       = "${var.prefix}-wsi"
-  virtual_machine_id         = azurerm_windows_virtual_machine.main.id
-  publisher                  = "Microsoft.Compute"
-  type                       = "CustomScriptExtension"
-  type_handler_version       = "1.8"
-  auto_upgrade_minor_version = true
+	name                       = "${var.prefix}-wsi"
+	virtual_machine_id         = azurerm_windows_virtual_machine.main.id
+	publisher                  = "Microsoft.Compute"
+	type                       = "CustomScriptExtension"
+	type_handler_version       = "1.8"
+	auto_upgrade_minor_version = true
 
-  settings = <<SETTINGS
+	settings = <<SETTINGS
     {
-      "commandToExecute": "powershell -ExecutionPolicy Unrestricted Install-WindowsFeature -Name Web-Server -IncludeAllSubFeature -IncludeManagementTools"
+
+	  "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.USERDATA.rendered)}')) | Out-File -filepath user_data.ps1\" && powershell -ExecutionPolicy Unrestricted -File user_data.ps1"
+
     }
-  SETTINGS
+	SETTINGS
+	tags = {
+		environment = "PreDEV"
+	}
+	timeouts {
+		create =  "1h30m"
+		delete =  "20m"
+	}
+
+}
+
+#Variable input for the user_data.ps1 script
+data "template_file" "USERDATA" {
+    template = "${file("user_data.ps1")}"
 }
 
 # Generate random text for a unique storage account name

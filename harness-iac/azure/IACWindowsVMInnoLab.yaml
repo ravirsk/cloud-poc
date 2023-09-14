@@ -50,7 +50,7 @@ pipeline:
                       type: InheritFromPlan
                     delegateSelectors:
                       - azure-innolab14-delegate
-                  timeout: 15m
+                  timeout: 1h
                   failureStrategies:
                     - onFailure:
                         errors:

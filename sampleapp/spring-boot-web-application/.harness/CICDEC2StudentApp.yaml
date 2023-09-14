@@ -1,0 +1,53 @@
+pipeline:
+  name: CI-CD-EC2-StudentApp
+  identifier: CICDIntegration
+  projectIdentifier: Cloud_Architecture
+  orgIdentifier: EA
+  tags: {}
+  stages:
+    - stage:
+        name: AppBuild
+        identifier: AppBuild
+        description: ""
+        type: Pipeline
+        spec:
+          org: EA
+          pipeline: CICDwithIACAWS
+          project: Cloud_Architecture
+          inputs:
+            identifier: CICDwithIACAWS
+            properties:
+              ci:
+                codebase:
+                  build: <+input>
+        tags: {}
+    - stage:
+        name: App-IAC-Deploy
+        identifier: AppIACDeploy
+        description: ""
+        type: Pipeline
+        spec:
+          org: EA
+          pipeline: IACec2
+          project: Cloud_Architecture
+          inputs:
+            identifier: IACec2
+            stages:
+              - stage:
+                  identifier: IACec2
+                  type: Custom
+                  variables:
+                    - name: artifactId
+                      type: String
+                      value: <+stage.variables.artifactId>
+                    - name: starterClass
+                      type: String
+                      value: <+stage.variables.artifactId>
+          outputs: []
+        tags: {}
+        variables:
+          - name: artifactId
+            type: String
+            description: ""
+            required: true
+            value: <+pipeline.stages.App_Build.variables.artifactId>

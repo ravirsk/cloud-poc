@@ -22,6 +22,6 @@ module "win-vm" {
 	vm_boot_storage_acct 	= "vmbootstorageacct"
 	prefix 					= "rg14WinVM01"
 	windows_vm_name 		= "rg14WinVmIIS01"
-	vm_size					= "Standard_DS1_v2"
+	vm_size					= "Standard_DS3_v2"
  
 }
