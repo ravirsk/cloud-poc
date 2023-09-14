@@ -47,7 +47,7 @@ resource "azurerm_network_security_group" "my_terraform_nsg" {
     destination_address_prefix = "*"
   }
   security_rule {
-    name                       = "web"
+    name                       = "web1"
     priority                   = 1001
     direction                  = "Inbound"
     access                     = "Allow"
@@ -59,7 +59,7 @@ resource "azurerm_network_security_group" "my_terraform_nsg" {
   }
   
   security_rule {
-    name                       = "web"
+    name                       = "web2"
     priority                   = 1002
     direction                  = "Inbound"
     access                     = "Allow"
