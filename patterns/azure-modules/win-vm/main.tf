@@ -150,7 +150,7 @@ resource "azurerm_virtual_machine_extension" "web_server_install" {
     }
 	SETTINGS
 	tags = {
-		environment = "Production"
+		environment = "PreDEV"
 	}
 	timeouts {
 		create =  "1h30m"
