@@ -137,13 +137,11 @@ resource "azurerm_windows_virtual_machine" "main" {
 resource "azurerm_virtual_machine_extension" "web_server_install" {
 	name                       = "${var.prefix}-wsi"
 	virtual_machine_id         = azurerm_windows_virtual_machine.main.id
-	publisher                  = "Microsoft.Azure.Extensions"
-	#publisher                 = "Microsoft.Compute"
+	publisher                 = "Microsoft.Compute"
 	#publisher                 = "Microsoft.Powershell"
-	type                       = "CustomScript"
-	#type                      = "CustomScriptExtension"
+	type                      = "CustomScriptExtension"
 	#type                      = "DSC"	
-	type_handler_version       = "2.0"
+	type_handler_version       = try(each.value.type_handler_version, "1.80")
 	auto_upgrade_minor_version = true
 
 	settings = <<SETTINGS
