@@ -19,7 +19,7 @@ $temp_path = "C:\temp\"
 
 $ErrorActionPreference = "Stop"
 $sampleAppSiteName = "SampleApp"
-$defaultDeployDrive = "E:\"
+$defaultDeployDrive = "C:\"
 if (!(Test-Path $defaultDeployDrive)) {
     $defaultDeployDrive=$env:systemdrive
 }
