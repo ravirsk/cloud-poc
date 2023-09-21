@@ -141,7 +141,7 @@ resource "azurerm_virtual_machine_extension" "web_server_install" {
 	#publisher                 = "Microsoft.Powershell"
 	type                      = "CustomScriptExtension"
 	#type                      = "DSC"	
-	type_handler_version       = "1.8"
+	type_handler_version       = "1.10"
 	auto_upgrade_minor_version = true
 
 	settings = <<SETTINGS
