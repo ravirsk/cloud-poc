@@ -48,7 +48,7 @@ resource "azurerm_network_security_group" "my_terraform_nsg" {
   }
   security_rule {
     name                       = "web1"
-    priority                   = 1001
+    priority                   = 2000
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -60,12 +60,12 @@ resource "azurerm_network_security_group" "my_terraform_nsg" {
   
   security_rule {
     name                       = "web2"
-    priority                   = 1002
+    priority                   = 3000
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "8080"
+    destination_port_range     = "443"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -137,9 +137,11 @@ resource "azurerm_windows_virtual_machine" "main" {
 resource "azurerm_virtual_machine_extension" "web_server_install" {
 	name                       = "${var.prefix}-wsi"
 	virtual_machine_id         = azurerm_windows_virtual_machine.main.id
-	publisher                  = "Microsoft.Compute"
-	type                       = "CustomScriptExtension"
-	type_handler_version       = "1.8"
+	publisher                 = "Microsoft.Compute"
+	#publisher                 = "Microsoft.Powershell"
+	type                      = "CustomScriptExtension"
+	#type                      = "DSC"	
+	type_handler_version       = "1.10"
 	auto_upgrade_minor_version = true
 
 	settings = <<SETTINGS
@@ -154,6 +156,7 @@ resource "azurerm_virtual_machine_extension" "web_server_install" {
 	}
 	timeouts {
 		create =  "1h30m"
+		update =  "1h30m"
 		delete =  "20m"
 	}
 
